@@ -1,6 +1,8 @@
+package logs;
+
 import org.junit.jupiter.api.extension.*;
 
-public class LoggingExtension implements  TestWatcher {
+public class LoggingExtension implements TestWatcher {
 
     @Override
     public void testSuccessful(ExtensionContext context) {

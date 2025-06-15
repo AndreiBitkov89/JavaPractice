@@ -1,3 +1,4 @@
+import logs.LoggingExtension;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.*;
@@ -5,6 +6,8 @@ import org.junit.jupiter.params.provider.*;
 
 import java.util.stream.Stream;
 
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(LoggingExtension.class)
@@ -43,13 +46,13 @@ public class CalculatorTest {
                 "-2, -4, -6"
         })
         public void testAdd(int a, int b, int result) {
-            assertEquals(result, calculator.add(a, b));
+            assertThat(calculator.add(a, b), equalTo(result));
         }
 
         @Disabled("Disabled until some bug is fixed")
         @Test
         void testDisabled() {
-            assertEquals(0, calculator.add(0, 0));
+            assertThat(calculator.add(0, 0), is(0));
         }
     }
 
@@ -63,7 +66,8 @@ public class CalculatorTest {
                 "3, 3, 1"
         })
         public void testDivide(int a, int b, int result) {
-            assertEquals(result, calculator.divide(a, b));
+            assertThat(result, notNullValue());
+            assertThat(calculator.divide(a, b), equalTo(result));
         }
 
         @Test
@@ -80,7 +84,8 @@ public class CalculatorTest {
         @DisplayName("Multiplying")
         @MethodSource("addData")
         void multiply(int a, int b, int result) {
-            assertEquals(result, calculator.multiply(a, b));
+            assertThat(calculator.multiply(a, b), instanceOf(Integer.class));
+            assertThat(calculator.multiply(a, b), equalTo(result));
         }
 
         static Stream<org.junit.jupiter.params.provider.Arguments> addData() {
@@ -92,14 +97,20 @@ public class CalculatorTest {
             );
         }
     }
+
     @Nested
     @DisplayName("Is Positive function tests")
-    public class IsPositiveTests{
+    public class IsPositiveTests {
         @TestFactory
         Stream<DynamicTest> dynamicIsPositiveTests() {
             return Stream.of(-3, 0, 1, 5).map(num ->
                     DynamicTest.dynamicTest("Check whether " + num + " positive",
-                            () -> assertEquals(num > 0, calculator.isPositive(num)))
+                            () -> {
+                                assertThat(calculator.isPositive(num), instanceOf(Boolean.class));
+                                assertThat(calculator.isPositive(num), equalTo(num > 0));
+                            }
+
+                    )
             );
         }
     }
